@@ -875,7 +875,7 @@ function render() {
 
   document.getElementById('totalUSD').textContent = fmtUSD.format(totalValue);
   document.getElementById('totalUSDsub').textContent =
-    (trm ? fmtCOP.format(totalValue * trm) : `Costo: ${fmtUSD.format(totalCost)}`) +
+    (trm && trm.valor ? fmtCOP.format(totalValue * trm.valor) : `Costo: ${fmtUSD.format(totalCost)}`) +
     (missingPriceCount > 0 ? ` · ${missingPriceCount} sin precio` : '');
   document.getElementById('totalCost').textContent = fmtUSD.format(totalCost);
   const pnlEl = document.getElementById('pnlUSD');
