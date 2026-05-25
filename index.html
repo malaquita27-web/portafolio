@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Portafolio (crypto)</title>
+
+<!-- iOS: comportarse como app cuando se abre desde la pantalla de inicio -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Portafolio" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="mobile-web-app-capable" content="yes" />
+<!-- Color de barra superior según tema del sistema -->
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
+<!-- Evita que Safari convierta tickers/números en links de teléfono -->
+<meta name="format-detection" content="telephone=no" />
+
+<!-- Ícono para Add to Home Screen (SVG inline) -->
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjQwIiBmaWxsPSIjMjU2M2ViIi8+PHRleHQgeD0iOTAiIHk9IjEyMCIgZm9udC1mYW1pbHk9IkFyaWFsLEhlbHZldGljYSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjEwOCIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+JDwvdGV4dD48L3N2Zz4=" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f8fafc;
+    --fg: #0a0a0a;
+    --muted: #71717a;
+    --border: #e4e4e7;
+    --accent: #2563eb;
+    --green: #16a34a;
+    --red: #dc2626;
+    --hover: #f4f4f5;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  }
+  html.dark {
+    --bg: #0a0a0a;
+    --surface: #18181b;
+    --fg: #fafafa;
+    --muted: #a1a1aa;
+    --border: #27272a;
+    --accent: #60a5fa;
+    --green: #4ade80;
+    --red: #f87171;
+    --hover: #27272a;
+    --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  html { overscroll-behavior-y: contain; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    min-height: 100vh;
+    /* Soporte para notch / Dynamic Island en iPhone */
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    font-feature-settings: "cv02", "cv03", "cv04";
+  }
+  .tabular { font-variant-numeric: tabular-nums; }
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  header .subtitle {
+    font-size: 12px;
+    color: var(--muted);
+    margin-left: 8px;
+    font-weight: 400;
+  }
+  .header-actions { display: flex; gap: 8px; align-items: center; }
+  main { padding: 20px 24px 40px; max-width: 1200px; margin: 0 auto; }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+  }
+  .card .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .card .value {
+    font-size: 22px;
+    font-weight: 600;
+    margin-top: 6px;
+  }
+  .card .sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .pos { color: var(--green); }
+  .neg { color: var(--red); }
+
+  .controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--fg);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.15s;
+    touch-action: manipulation; /* iOS: clic más rápido sin esperar doble-tap */
+  }
+  .btn:hover { background: var(--hover); }
+  .btn.primary {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+  .btn.primary:hover { opacity: 0.9; background: var(--accent); }
+  .btn.danger { color: var(--red); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  select, input {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--fg);
+    font-size: 13px;
+    font-family: inherit;
+  }
+  select:focus, input:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: var(--accent); }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead { background: var(--hover); }
+  th {
+    text-align: left;
+    padding: 10px 12px;
+    font-weight: 500;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+  th.num { text-align: right; }
+  td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  td.num { text-align: right; }
+  tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--hover); }
+  .ticker {
+    font-weight: 600;
+    font-size: 13px;
+  }
+  .type-tag {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .chart-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+    height: fit-content;
+  }
+  .chart-wrap h3 {
+    margin: 0 0 12px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  #pieChart { max-height: 280px; }
+
+  /* Modal del formulario */
+  .modal-bg {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
+  }
+  .modal-bg.open { display: flex; }
+  .modal {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  }
+  .modal h2 { margin: 0 0 16px; font-size: 16px; font-weight: 600; }
+  .field { margin-bottom: 12px; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+  .field input, .field select { width: 100%; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .field-hint {
+    display: block;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+    line-height: 1.35;
+  }
+  .field-hint strong { color: var(--fg); font-weight: 600; }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+
+  /* Spinner */
+  .spinner {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .stale {
+    color: var(--muted);
+    text-decoration: underline dotted;
+    cursor: help;
+  }
+
+  /* Toggle auto-refresh */
+  .auto-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    font-size: 12px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .auto-toggle input { display: none; }
+  .auto-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--muted);
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+  .auto-toggle.on .auto-dot {
+    background: var(--green);
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2); }
+    50%      { box-shadow: 0 0 0 6px rgba(22, 163, 74, 0.05); }
+  }
+  .auto-countdown { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  /* Toast no bloqueante para errores de refresh */
+  .toast {
+    position: fixed;
+    bottom: calc(24px + env(safe-area-inset-bottom));
+    right: 16px;
+    left: 16px;
+    max-width: 360px;
+    margin-left: auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--red);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--fg);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+    z-index: 200;
+    white-space: pre-line;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+  .empty {
+    padding: 40px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 16px 24px;
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  /* Filtro tipo (acciones / crypto / todos) */
+  .type-filter {
+    display: inline-flex;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .type-filter button {
+    padding: 7px 14px;
+    border: none;
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    touch-action: manipulation;
+  }
+  .type-filter button.active {
+    background: var(--accent);
+    color: white;
+  }
+  .type-filter button:not(.active):hover { background: var(--hover); color: var(--fg); }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .cards { grid-template-columns: repeat(2, 1fr); }
+    .layout { grid-template-columns: 1fr; }
+    /* En mobile el chart queda DEBAJO de la tabla (orden natural del HTML) */
+  }
+  @media (max-width: 600px) {
+    main { padding: 16px; }
+    header { padding: 12px 16px; }
+    .card .value { font-size: 18px; }
+    table { font-size: 12px; }
+    th, td { padding: 8px 6px; }
+    th.hide-mobile, td.hide-mobile { display: none; }
+    /* iOS: inputs >=16px evitan el zoom automático al enfocar */
+    select, input { font-size: 16px; padding: 10px 12px; }
+    /* Touch targets ≥44px según guías de Apple */
+    .btn { min-height: 44px; padding: 10px 14px; font-size: 14px; }
+    .type-filter button { min-height: 44px; padding: 10px 14px; font-size: 13px; }
+    .auto-toggle { min-height: 44px; padding: 10px 14px; font-size: 13px; }
+    .modal { padding: 20px; max-width: 100%; }
+    .controls { gap: 6px; }
+    /* En móvil, ocultar título largo en el header */
+    header h1 .subtitle { display: none; }
+    .header-actions .btn { min-width: 44px; justify-content: center; }
+    /* En móvil, ocultar el subtítulo "ACCIÓN · COMPRA 2026-XX-XX" debajo del ticker */
+    .type-tag { display: none; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Portafolio<span class="subtitle">crypto · USD/COP · GitHub Pages</span></h1>
+  </div>
+  <div class="header-actions">
+    <button class="btn" id="themeBtn" title="Cambiar tema" aria-label="Cambiar tema">🌙</button>
+  </div>
+</header>
+
+<main>
+  <div class="cards">
+    <div class="card">
+      <div class="label">Valor total (USD)</div>
+      <div class="value tabular" id="totalUSD">—</div>
+      <div class="sub" id="totalUSDsub"></div>
+    </div>
+    <div class="card">
+      <div class="label">Monto invertido (USD)</div>
+      <div class="value tabular" id="totalCost">—</div>
+      <div class="sub" id="totalCostSub">Lo que pusiste de tu plata</div>
+    </div>
+    <div class="card">
+      <div class="label">P&L total (USD)</div>
+      <div class="value tabular" id="pnlUSD">—</div>
+      <div class="sub" id="pnlSub"></div>
+    </div>
+    <div class="card">
+      <div class="label">P&L total (%)</div>
+      <div class="value tabular" id="pnlPct">—</div>
+      <div class="sub">Sobre costo total</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="type-filter" id="typeFilter">
+      <button data-filter="all" class="active">Todos</button>
+      <button data-filter="accion">Acciones</button>
+      <button data-filter="crypto">Crypto</button>
+    </div>
+    <button class="btn primary" id="addBtn">+ Agregar posición</button>
+    <button class="btn" id="refreshBtn">
+      <span id="refreshIcon">⟳</span> Refrescar precios
+    </button>
+    <label class="auto-toggle" id="autoToggle" title="Auto-actualización cada 60 s (se pausa al cambiar de pestaña)">
+      <input type="checkbox" id="autoCheck" />
+      <span class="auto-dot"></span>
+      <span>Auto</span>
+      <span class="auto-countdown" id="autoCountdown"></span>
+    </label>
+    <button class="btn" id="exportBtn">↓ Exportar CSV</button>
+    <span style="flex:1"></span>
+    <span style="font-size:11px;color:var(--muted)" id="lastUpdate"></span>
+  </div>
+
+  <div class="layout">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Activo</th>
+            <th class="num">Cantidad</th>
+            <th class="num hide-mobile">Costo prom.</th>
+            <th class="num hide-mobile">Precio actual</th>
+            <th class="num hide-mobile">Valor (USD)</th>
+            <th class="num">P&L</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="chart-wrap">
+      <h3>Distribución del portafolio</h3>
+      <canvas id="pieChart"></canvas>
+    </div>
+  </div>
+</main>
+
+<footer>
+  Datos guardados localmente en tu navegador (localStorage). No se envían a ningún servidor.
+  Precios: Stooq · CoinGecko · TRM oficial datos.gov.co.
+</footer>
+
+<!-- Modal: agregar posición -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <h2 id="modalTitle">Agregar posición</h2>
+    <form id="form">
+      <div class="field">
+        <label>Tipo</label>
+        <select id="f_tipo" required>
+          <option value="accion">Acción (EE.UU.)</option>
+          <option value="crypto">Criptomoneda</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Ticker</label>
+        <input type="text" id="f_ticker" placeholder="AAPL, BTC, VOO..." required maxlength="10" autocapitalize="characters" autocorrect="off" />
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Cantidad</label>
+          <input type="text" id="f_cantidad" inputmode="decimal" pattern="[0-9]+([.,][0-9]+)?" autocomplete="off" required />
+          <small class="field-hint">En Hapi: <strong>Activos totales</strong></small>
+        </div>
+        <div class="field">
+          <label>Monto invertido (USD)</label>
+          <input type="text" id="f_monto" inputmode="decimal" pattern="[0-9]+([.,][0-9]+)?" autocomplete="off" required />
+          <small class="field-hint">En Hapi: <strong>Monto invertido</strong>. El total que te debitaron.</small>
+        </div>
+      </div>
+      <div class="field">
+        <label>Fecha de compra</label>
+        <input type="date" id="f_fecha" required />
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn" id="cancelBtn">Cancelar</button>
+        <button type="submit" class="btn primary">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* ============================================================
+ *  Mapeo de tickers crypto comunes a IDs de CoinGecko
+ * ============================================================ */
+const CRYPTO_IDS = {
+  BTC: 'bitcoin', ETH: 'ethereum', SOL: 'solana', USDT: 'tether',
+  USDC: 'usd-coin', ADA: 'cardano', BNB: 'binancecoin', XRP: 'ripple',
+  DOGE: 'dogecoin', MATIC: 'polygon-ecosystem-token', POL: 'polygon-ecosystem-token', AVAX: 'avalanche-2',
+  DOT: 'polkadot', LINK: 'chainlink', LTC: 'litecoin', SHIB: 'shiba-inu',
+  TRX: 'tron', UNI: 'uniswap', ATOM: 'cosmos', NEAR: 'near',
+  XLM: 'stellar', BCH: 'bitcoin-cash', ALGO: 'algorand', FIL: 'filecoin'
+};
+
+/* ============================================================
+ *  Estado y persistencia
+ * ============================================================ */
+const STORAGE_KEYS = {
+  positions: 'portafolio.positions',
+  prices: 'portafolio.prices',
+  trm: 'portafolio.trm',
+  theme: 'portafolio.theme',
+  lastUpdate: 'portafolio.lastUpdate',
+  autoRefresh: 'portafolio.autoRefresh',
+  typeFilter: 'portafolio.typeFilter'
+};
+
+const AUTO_REFRESH_INTERVAL_MS = 60_000;
+
+function cryptoId() {
+  return 'p_' + Math.random().toString(36).slice(2, 11);
+}
+
+function loadJSON(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch { return fallback; }
+}
+function saveJSON(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+/* ============================================================
+ *  Migración: si vienen posiciones viejas con campo "plataforma",
+ *  lo eliminamos transparente.
+ * ============================================================ */
+let positions = loadJSON(STORAGE_KEYS.positions, null);
+if (positions === null) {
+  positions = [];
+  saveJSON(STORAGE_KEYS.positions, positions);
+} else {
+  let migrated = false;
+  positions = positions.map(p => {
+    if ('plataforma' in p) { migrated = true; const { plataforma, ...rest } = p; return rest; }
+    return p;
+  });
+  if (migrated) saveJSON(STORAGE_KEYS.positions, positions);
+}
+
+/* ============================================================
+ *  SEED via URL: ?seed=BASE64(JSON.stringify(arrayDePosiciones))
+ *  Reemplaza positions[] al cargar. Útil para migrar posiciones
+ *  entre dispositivos sin tener que digitarlas a mano.
+ * ============================================================ */
+(function applySeedFromURL() {
+  const params = new URLSearchParams(location.search);
+  const seed = params.get('seed');
+  if (!seed) return;
+  try {
+    // Decodificación robusta UTF-8 + base64 URL-safe
+    const b64 = seed.replace(/-/g, '+').replace(/_/g, '/');
+    const json = decodeURIComponent(escape(atob(b64)));
+    const data = JSON.parse(json);
+    if (!Array.isArray(data)) throw new Error('seed no es array');
+    const valid = data.filter(p =>
+      p && (p.tipo === 'accion' || p.tipo === 'crypto') &&
+      typeof p.ticker === 'string' && p.ticker.length > 0 &&
+      typeof p.cantidad === 'number' && p.cantidad > 0 &&
+      typeof p.precio === 'number' && p.precio > 0
+    );
+    if (!valid.length) throw new Error('seed sin posiciones válidas');
+    valid.forEach(p => {
+      if (!p.id) p.id = cryptoId();
+      if (!p.fecha) p.fecha = new Date().toISOString().slice(0, 10);
+      p.ticker = p.ticker.toUpperCase();
+    });
+    positions = valid;
+    saveJSON(STORAGE_KEYS.positions, positions);
+    localStorage.removeItem(STORAGE_KEYS.lastUpdate);
+    // Limpiar la URL para que no se vuelva a aplicar al recargar
+    history.replaceState({}, '', location.pathname);
+    setTimeout(() => {
+      const banner = document.createElement('div');
+      banner.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#10b981;color:#fff;padding:14px 20px;border-radius:10px;font-weight:600;z-index:99999;box-shadow:0 4px 12px rgba(0,0,0,0.2);font-family:-apple-system,sans-serif';
+      banner.textContent = `✅ ${valid.length} posiciones importadas`;
+      document.body.appendChild(banner);
+      setTimeout(() => banner.remove(), 3500);
+    }, 100);
+  } catch (err) {
+    console.error('Error procesando seed:', err);
+    setTimeout(() => {
+      const banner = document.createElement('div');
+      banner.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#dc2626;color:#fff;padding:14px 20px;border-radius:10px;font-weight:600;z-index:99999;box-shadow:0 4px 12px rgba(0,0,0,0.2);font-family:-apple-system,sans-serif;max-width:90%;text-align:center';
+      banner.textContent = '❌ Error importando: ' + err.message;
+      document.body.appendChild(banner);
+      setTimeout(() => banner.remove(), 5000);
+    }, 100);
+  }
+})();
+
+let priceCache = loadJSON(STORAGE_KEYS.prices, {});
+let trm = loadJSON(STORAGE_KEYS.trm, null);
+let typeFilter = localStorage.getItem(STORAGE_KEYS.typeFilter) || 'all';
+let pieChart = null;
+
+/* ============================================================
+ *  Tema
+ * ============================================================ */
+function applyTheme(t) {
+  document.documentElement.classList.toggle('dark', t === 'dark');
+  document.getElementById('themeBtn').textContent = t === 'dark' ? '☀️' : '🌙';
+}
+const savedTheme = localStorage.getItem(STORAGE_KEYS.theme)
+  || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+applyTheme(savedTheme);
+document.getElementById('themeBtn').addEventListener('click', () => {
+  const next = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+  localStorage.setItem(STORAGE_KEYS.theme, next);
+  applyTheme(next);
+  render();
+});
+
+/* ============================================================
+ *  Llamadas a APIs (con CORS fallback)
+ * ============================================================ */
+const CORS_PROXY = 'https://corsproxy.io/?';
+
+async function fetchWithFallback(url) {
+  try {
+    const r = await fetch(url);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return await r.json();
+  } catch {
+    const r2 = await fetch(CORS_PROXY + encodeURIComponent(url));
+    if (!r2.ok) throw new Error('proxy HTTP ' + r2.status);
+    return await r2.json();
+  }
+}
+
+async function fetchTextWithFallback(url) {
+  try {
+    const r = await fetch(url);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return await r.text();
+  } catch {
+    const r2 = await fetch(CORS_PROXY + encodeURIComponent(url));
+    if (!r2.ok) throw new Error('proxy HTTP ' + r2.status);
+    return await r2.text();
+  }
+}
+
+// Acciones: Stooq como fuente primaria (via proxy del mismo origen, definido en _redirects).
+// Yahoo Finance como fallback (también via proxy). Esto evita los bloqueos CORS
+// que sufren ambas APIs cuando se llaman directamente desde el navegador.
+async function getStockPrice(ticker) {
+  // === GitHub Pages: no hay proxy CORS, retorna null silenciosamente ===
+  if (location.hostname.endsWith('.github.io')) {
+    return null;
+  }
+  try {
+    // /api/stock/* lo enruta el _redirects de Netlify a stooq.com
+    const r = await fetch(`/api/stock/${ticker.toLowerCase()}`);
+    if (!r.ok) throw new Error('Stooq HTTP ' + r.status);
+    const csv = await r.text();
+    const lines = csv.trim().split('\n');
+    if (lines.length >= 2) {
+      const cols = lines[1].split(',');
+      // Columna 6 = Close. Si Stooq no tiene el ticker devuelve "N/D".
+      const close = parseFloat(cols[6]);
+      if (close > 0 && !isNaN(close)) return close;
+    }
+    throw new Error('Stooq sin datos');
+  } catch {
+    // /api/yahoo/* lo enruta el _redirects a query1.finance.yahoo.com
+    const r = await fetch(`/api/yahoo/${ticker}`);
+    if (!r.ok) throw new Error('Yahoo HTTP ' + r.status);
+    const data = await r.json();
+    const price = data?.chart?.result?.[0]?.meta?.regularMarketPrice;
+    if (typeof price !== 'number') throw new Error('precio no encontrado para ' + ticker);
+    return price;
+  }
+}
+
+async function getCryptoPrices(tickers) {
+  const ids = tickers.map(t => CRYPTO_IDS[t.toUpperCase()]).filter(Boolean);
+  if (ids.length === 0) return {};
+  const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids.join(',')}&vs_currencies=usd`;
+  const data = await fetchWithFallback(url);
+  const out = {};
+  for (const t of tickers) {
+    const id = CRYPTO_IDS[t.toUpperCase()];
+    if (id && data[id]?.usd != null) out[t.toUpperCase()] = data[id].usd;
+  }
+  return out;
+}
+
+async function getTRM() {
+  // El espacio en "vigenciadesde DESC" debe estar URL-encoded
+  const url = 'https://www.datos.gov.co/resource/32sa-8pi3.json?$limit=1&$order=' + encodeURIComponent('vigenciadesde DESC');
+  const data = await fetchWithFallback(url);
+  const row = Array.isArray(data) ? data[0] : null;
+  if (!row || !row.valor) throw new Error('TRM no encontrada');
+  return { valor: parseFloat(row.valor), vigenciadesde: row.vigenciadesde, ts: Date.now() };
+}
+
+/* ============================================================
+ *  Refrescar precios
+ * ============================================================ */
+let refreshing = false;
+async function refreshPrices(showAlerts = true) {
+  if (refreshing) return;
+  refreshing = true;
+  const btn = document.getElementById('refreshBtn');
+  const icon = document.getElementById('refreshIcon');
+  btn.disabled = true;
+  icon.outerHTML = '<span id="refreshIcon" class="spinner"></span>';
+
+  const errors = [];
+
+  const stocks = [...new Set(positions.filter(p => p.tipo === 'accion').map(p => p.ticker.toUpperCase()))];
+  await Promise.all(stocks.map(async (t) => {
+    try {
+      const price = await getStockPrice(t);
+      priceCache[t] = { price, ts: Date.now() };
+    } catch (e) {
+      errors.push(`Acción ${t}: ${e.message}`);
+    }
+  }));
+
+  const cryptos = [...new Set(positions.filter(p => p.tipo === 'crypto').map(p => p.ticker.toUpperCase()))];
+  if (cryptos.length) {
+    try {
+      const pricesMap = await getCryptoPrices(cryptos);
+      const now = Date.now();
+      for (const [t, price] of Object.entries(pricesMap)) {
+        priceCache[t] = { price, ts: now };
+      }
+      const faltantes = cryptos.filter(t => !(t in pricesMap));
+      if (faltantes.length) errors.push(`Crypto sin mapear: ${faltantes.join(', ')}`);
+    } catch (e) {
+      errors.push(`Crypto: ${e.message}`);
+    }
+  }
+
+  try {
+    trm = await getTRM();
+    saveJSON(STORAGE_KEYS.trm, trm);
+  } catch (e) {
+    errors.push(`TRM: ${e.message}`);
+  }
+
+  saveJSON(STORAGE_KEYS.prices, priceCache);
+  localStorage.setItem(STORAGE_KEYS.lastUpdate, String(Date.now()));
+
+  refreshing = false;
+  btn.disabled = false;
+  document.getElementById('refreshIcon').outerHTML = '<span id="refreshIcon">⟳</span>';
+
+  render();
+
+  if (errors.length && showAlerts) {
+    console.warn('Errores al refrescar:', errors);
+    showToast('Algunos precios no se actualizaron:\n• ' + errors.join('\n• ') + '\n\nSe muestran los últimos precios cacheados.');
+  } else if (errors.length) {
+    console.warn('Errores en auto-refresh:', errors);
+  }
+}
+
+// Toast no bloqueante (auto-cierre 6s, clic para cerrar antes)
+let toastTimer = null;
+function showToast(msg) {
+  let el = document.getElementById('toast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'toast';
+    el.className = 'toast';
+    el.addEventListener('click', () => el.classList.remove('show'));
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 6000);
+}
+
+/* ============================================================
+ *  Formato
+ * ============================================================ */
+const fmtUSD = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmtCOP = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 });
+const fmtPct = (n) => (n >= 0 ? '+' : '') + n.toFixed(2) + ' %';
+const fmtNum = (n, d = 4) => new Intl.NumberFormat('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: d }).format(n);
+
+function formatRelativeTime(ts) {
+  if (!ts) return '';
+  const diff = Date.now() - ts;
+  const sec = Math.floor(diff / 1000);
+  if (sec < 60) return `hace ${sec} s`;
+  const min = Math.floor(sec / 60);
+  if (min < 60) return `hace ${min} min`;
+  const h = Math.floor(min / 60);
+  if (h < 24) return `hace ${h} h`;
+  const d = Math.floor(h / 24);
+  return `hace ${d} d`;
+}
+
+/* ============================================================
+ *  Render
+ * ============================================================ */
+function render() {
+  const filtered = typeFilter === 'all' ? positions : positions.filter(p => p.tipo === typeFilter);
+
+  const rows = filtered.map(p => {
+    const cached = priceCache[p.ticker.toUpperCase()];
+    const currentPrice = cached?.price ?? null;
+    const stale = cached ? (Date.now() - cached.ts > 15 * 60 * 1000) : false;
+    const cost = p.cantidad * p.precio;
+    const value = currentPrice != null ? p.cantidad * currentPrice : null;
+    const pnl = value != null ? value - cost : null;
+    const pnlPct = pnl != null && cost > 0 ? (pnl / cost) * 100 : null;
+    return { ...p, currentPrice, stale, cost, value, pnl, pnlPct };
+  });
+
+  rows.sort((a, b) => (b.value ?? -1) - (a.value ?? -1));
+
+  // P&L solo sobre posiciones con precio actual conocido
+  const valuedRows = rows.filter(r => r.value != null);
+  const missingPriceCount = rows.length - valuedRows.length;
+  const valuedCost = valuedRows.reduce((s, r) => s + r.cost, 0);
+  const totalCost = rows.reduce((s, r) => s + r.cost, 0);
+  const totalValue = valuedRows.reduce((s, r) => s + r.value, 0);
+  const totalPnL = totalValue - valuedCost;
+  const totalPnLPct = valuedCost > 0 ? (totalPnL / valuedCost) * 100 : 0;
+
+  document.getElementById('totalUSD').textContent = fmtUSD.format(totalValue);
+  document.getElementById('totalUSDsub').textContent =
+    `Costo: ${fmtUSD.format(totalCost)}` +
+    (missingPriceCount > 0 ? ` · ${missingPriceCount} sin precio` : '');
+  document.getElementById('totalCost').textContent = fmtUSD.format(totalCost);
+  const pnlEl = document.getElementById('pnlUSD');
+  pnlEl.textContent = fmtUSD.format(totalPnL);
+  pnlEl.className = 'value tabular ' + (totalPnL >= 0 ? 'pos' : 'neg');
+  const pctEl = document.getElementById('pnlPct');
+  pctEl.textContent = fmtPct(totalPnLPct);
+  pctEl.className = 'value tabular ' + (totalPnLPct >= 0 ? 'pos' : 'neg');
+  document.getElementById('pnlSub').textContent =
+    missingPriceCount > 0
+      ? `${valuedRows.length}/${rows.length} posiciones`
+      : `${rows.length} posiciones`;
+
+  const lu = parseInt(localStorage.getItem(STORAGE_KEYS.lastUpdate) || '0', 10);
+  document.getElementById('lastUpdate').textContent = lu ? `Actualizado ${formatRelativeTime(lu)}` : '';
+
+  const tbody = document.getElementById('tbody');
+  if (rows.length === 0) {
+    const msg = positions.length === 0
+      ? 'No hay posiciones. Toca "Agregar posición" para registrar tu primera compra.'
+      : `No hay posiciones de tipo ${typeFilter === 'accion' ? 'acciones' : 'crypto'}.`;
+    tbody.innerHTML = `<tr><td colspan="7" class="empty">${msg}</td></tr>`;
+  } else {
+    tbody.innerHTML = rows.map(r => {
+      const priceCell = r.currentPrice != null
+        ? `<span class="${r.stale ? 'stale' : ''}" ${r.stale ? 'title="Precio desactualizado, no se pudo refrescar"' : ''}>${fmtUSD.format(r.currentPrice)}${r.stale ? ' *' : ''}</span>`
+        : '<span class="stale" title="Sin datos">—</span>';
+      const valueCell = r.value != null ? fmtUSD.format(r.value) : '—';
+      const pnlClass = r.pnl == null ? '' : (r.pnl >= 0 ? 'pos' : 'neg');
+      const pnlCell = r.pnl != null
+        ? `<span class="${pnlClass}">${fmtUSD.format(r.pnl)}<br><small>${fmtPct(r.pnlPct)}</small></span>`
+        : '—';
+      return `
+        <tr>
+          <td>
+            <div class="ticker">${r.ticker.toUpperCase()}</div>
+            <div class="type-tag">${r.tipo === 'crypto' ? 'crypto' : 'acción'} · compra ${r.fecha}</div>
+          </td>
+          <td class="num tabular">${fmtNum(r.cantidad, 8)}</td>
+          <td class="num tabular hide-mobile">${fmtUSD.format(r.precio)}</td>
+          <td class="num tabular hide-mobile">${priceCell}</td>
+          <td class="num tabular hide-mobile">${valueCell}</td>
+          <td class="num tabular">${pnlCell}</td>
+          <td class="num"><button class="btn danger" data-id="${r.id}" title="Eliminar" aria-label="Eliminar">✕</button></td>
+        </tr>
+      `;
+    }).join('');
+
+    tbody.querySelectorAll('button[data-id]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        const pos = positions.find(p => p.id === id);
+        if (pos && confirm(`¿Eliminar ${pos.ticker}?`)) {
+          positions = positions.filter(p => p.id !== id);
+          saveJSON(STORAGE_KEYS.positions, positions);
+          render();
+        }
+      });
+    });
+  }
+
+  renderChart(rows);
+}
+
+function renderChart(rows) {
+  const ctx = document.getElementById('pieChart');
+  if (!ctx) return;
+  const withValue = rows.filter(r => r.value != null && r.value > 0);
+
+  const labels = withValue.map(r => r.ticker.toUpperCase());
+  const values = withValue.map(r => r.value);
+  const isDark = document.documentElement.classList.contains('dark');
+
+  const palette = ['#2563eb', '#16a34a', '#dc2626', '#f59e0b', '#7c3aed', '#0891b2',
+                   '#db2777', '#65a30d', '#ea580c', '#0284c7', '#9333ea', '#84cc16',
+                   '#e11d48', '#0d9488', '#a16207'];
+  const bg = labels.map((_, i) => palette[i % palette.length]);
+
+  if (pieChart) pieChart.destroy();
+  if (values.length === 0) return;
+
+  pieChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: { labels, datasets: [{ data: values, backgroundColor: bg, borderColor: isDark ? '#18181b' : '#fff', borderWidth: 2 }] },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { color: isDark ? '#fafafa' : '#0a0a0a', font: { size: 11, family: 'Inter' }, padding: 8, boxWidth: 12 } },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const total = values.reduce((a, b) => a + b, 0);
+              const pct = (ctx.parsed / total * 100).toFixed(1);
+              return `${ctx.label}: ${fmtUSD.format(ctx.parsed)} (${pct}%)`;
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+/* ============================================================
+ *  Filtro tipo (botones segmentados)
+ * ============================================================ */
+function setTypeFilter(f) {
+  typeFilter = f;
+  localStorage.setItem(STORAGE_KEYS.typeFilter, f);
+  document.querySelectorAll('#typeFilter button').forEach(b => {
+    b.classList.toggle('active', b.dataset.filter === f);
+  });
+  render();
+}
+document.querySelectorAll('#typeFilter button').forEach(b => {
+  b.addEventListener('click', () => setTypeFilter(b.dataset.filter));
+});
+setTypeFilter(typeFilter);
+
+/* ============================================================
+ *  Formulario: agregar posición
+ * ============================================================ */
+const modal = document.getElementById('modal');
+const form = document.getElementById('form');
+
+function openModal() {
+  form.reset();
+  document.getElementById('f_fecha').value = new Date().toISOString().slice(0, 10);
+  modal.classList.add('open');
+  document.getElementById('f_ticker').focus();
+}
+function closeModal() { modal.classList.remove('open'); }
+
+document.getElementById('addBtn').addEventListener('click', openModal);
+document.getElementById('cancelBtn').addEventListener('click', closeModal);
+modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const tipo = document.getElementById('f_tipo').value;
+  const ticker = document.getElementById('f_ticker').value.trim().toUpperCase();
+  // En iOS el teclado decimal muestra "," según locale; aceptamos ambos
+  // separadores ("1,4695" y "1.4695") normalizando antes de parseFloat.
+  const parseNum = (s) => parseFloat(String(s).trim().replace(',', '.'));
+  const cantidad = parseNum(document.getElementById('f_cantidad').value);
+  // El usuario ingresa el monto invertido total (lo que ve directo en Hapi);
+  // el storage interno sigue usando precio por acción, así que dividimos acá.
+  const monto = parseNum(document.getElementById('f_monto').value);
+  const fecha = document.getElementById('f_fecha').value;
+
+  if (!ticker || isNaN(cantidad) || cantidad <= 0 || isNaN(monto) || monto < 0 || !fecha) {
+    alert('Datos inválidos. Revisa el formulario.');
+    return;
+  }
+  const precio = monto / cantidad;
+  if (new Date(fecha) > new Date()) {
+    alert('La fecha de compra no puede ser futura.');
+    return;
+  }
+
+  if (tipo === 'crypto' && !CRYPTO_IDS[ticker]) {
+    if (!confirm(`El ticker "${ticker}" no está en el diccionario de crypto. Se guardará pero el precio no se actualizará automáticamente. ¿Continuar?`)) return;
+  }
+
+  positions.push({ id: cryptoId(), tipo, ticker, cantidad, precio, fecha });
+  saveJSON(STORAGE_KEYS.positions, positions);
+  closeModal();
+  render();
+  refreshPrices(false);
+});
+
+/* ============================================================
+ *  Refrescar manual y exportar CSV
+ * ============================================================ */
+document.getElementById('refreshBtn').addEventListener('click', () => refreshPrices(true));
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const data = typeFilter === 'all' ? positions : positions.filter(p => p.tipo === typeFilter);
+  const rows = data.map(p => {
+    const cached = priceCache[p.ticker.toUpperCase()];
+    const currentPrice = cached?.price ?? '';
+    const value = currentPrice ? p.cantidad * currentPrice : '';
+    const pnl = value ? value - (p.cantidad * p.precio) : '';
+    return [p.tipo, p.ticker, p.cantidad, p.precio, currentPrice, value, pnl, p.fecha];
+  });
+  const header = ['tipo', 'ticker', 'cantidad', 'precio_compra', 'precio_actual', 'valor_actual', 'pnl', 'fecha_compra'];
+  const csv = [header, ...rows].map(r => r.map(c => {
+    const s = String(c);
+    return s.includes(',') || s.includes('"') ? `"${s.replace(/"/g, '""')}"` : s;
+  }).join(',')).join('\n');
+  // BOM UTF-8 para Excel
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `portafolio_${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+});
+
+/* ============================================================
+ *  Auto-refresh: cada 60 s mientras la pestaña está visible
+ * ============================================================ */
+let autoRefreshTimer = null;
+let countdownTimer = null;
+let nextRefreshAt = 0;
+
+const autoCheck = document.getElementById('autoCheck');
+const autoToggle = document.getElementById('autoToggle');
+const autoCountdown = document.getElementById('autoCountdown');
+
+function startAutoRefresh() {
+  stopAutoRefresh();
+  autoToggle.classList.add('on');
+  scheduleNextRefresh();
+  autoRefreshTimer = setInterval(() => {
+    if (document.hidden) return;
+    refreshPrices(false);
+    scheduleNextRefresh();
+  }, AUTO_REFRESH_INTERVAL_MS);
+  countdownTimer = setInterval(updateCountdown, 1000);
+  updateCountdown();
+}
+
+function stopAutoRefresh() {
+  autoToggle.classList.remove('on');
+  if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+  if (countdownTimer) clearInterval(countdownTimer);
+  autoRefreshTimer = null;
+  countdownTimer = null;
+  autoCountdown.textContent = '';
+}
+
+function scheduleNextRefresh() {
+  nextRefreshAt = Date.now() + AUTO_REFRESH_INTERVAL_MS;
+}
+
+function updateCountdown() {
+  if (!autoRefreshTimer) return;
+  if (document.hidden) {
+    autoCountdown.textContent = '(pausado)';
+    return;
+  }
+  const left = Math.max(0, Math.round((nextRefreshAt - Date.now()) / 1000));
+  autoCountdown.textContent = '· ' + left + ' s';
+  const lu = parseInt(localStorage.getItem(STORAGE_KEYS.lastUpdate) || '0', 10);
+  document.getElementById('lastUpdate').textContent = lu ? `Actualizado ${formatRelativeTime(lu)}` : '';
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (!autoRefreshTimer) return;
+  if (!document.hidden && Date.now() >= nextRefreshAt) {
+    refreshPrices(false);
+    scheduleNextRefresh();
+  }
+  updateCountdown();
+});
+
+autoCheck.addEventListener('change', () => {
+  const on = autoCheck.checked;
+  localStorage.setItem(STORAGE_KEYS.autoRefresh, on ? '1' : '0');
+  if (on) startAutoRefresh();
+  else stopAutoRefresh();
+});
+
+/* ============================================================
+ *  Inicio
+ * ============================================================ */
+render();
+
+const lu = parseInt(localStorage.getItem(STORAGE_KEYS.lastUpdate) || '0', 10);
+if (positions.length > 0 && Date.now() - lu > 5 * 60 * 1000) {
+  refreshPrices(false);
+}
+
+const autoPref = localStorage.getItem(STORAGE_KEYS.autoRefresh);
+const autoOn = autoPref === null ? true : autoPref === '1';
+autoCheck.checked = autoOn;
+if (autoOn) startAutoRefresh();
+</script>
+</body>
+</html>
