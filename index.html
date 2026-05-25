@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Portafolio (crypto)</title>
+<title>Portafolio</title>
 
 <!-- iOS: comportarse como app cuando se abre desde la pantalla de inicio -->
 <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -410,7 +410,7 @@
 <body>
 <header>
   <div>
-    <h1>Portafolio<span class="subtitle">crypto · USD/COP · GitHub Pages</span></h1>
+    <h1>Portafolio<span class="subtitle">acciones · crypto · USD/COP</span></h1>
   </div>
   <div class="header-actions">
     <button class="btn" id="themeBtn" title="Cambiar tema" aria-label="Cambiar tema">🌙</button>
@@ -698,10 +698,6 @@ async function fetchTextWithFallback(url) {
 // Yahoo Finance como fallback (también via proxy). Esto evita los bloqueos CORS
 // que sufren ambas APIs cuando se llaman directamente desde el navegador.
 async function getStockPrice(ticker) {
-  // === GitHub Pages: no hay proxy CORS, retorna null silenciosamente ===
-  if (location.hostname.endsWith('.github.io')) {
-    return null;
-  }
   try {
     // /api/stock/* lo enruta el _redirects de Netlify a stooq.com
     const r = await fetch(`/api/stock/${ticker.toLowerCase()}`);

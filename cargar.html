@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cargar posiciones — Portafolio</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0a0a0a;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.card{max-width:480px;width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:16px;padding:28px;text-align:center}
+h1{margin:0 0 8px;font-size:20px}
+p{margin:0 0 16px;color:#a3a3a3;font-size:14.5px;line-height:1.5}
+.btn{display:inline-block;background:#3b82f6;color:#fff;border:none;padding:14px 24px;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;width:100%;margin-top:12px}
+.btn:active{background:#2563eb}
+.info{margin-top:18px;font-size:13px;color:#737373;text-align:left;background:#0f0f0f;padding:12px 14px;border-radius:8px;border-left:3px solid #3b82f6}
+.warn{color:#fbbf24;font-size:13px;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>📥 Cargar mis 18 posiciones</h1>
+<p>Esto cargará tus 18 acciones en este Portafolio y reemplazará cualquier dato que ya tengas guardado en este dispositivo.</p>
+<button class="btn" id="loadBtn">Cargar y abrir el Portafolio</button>
+<p class="warn">⚠️ Si ya tienes posiciones cargadas aquí, se borrarán.</p>
+<div class="info">
+<strong>Lo que se va a cargar:</strong><br>
+PLTR · TSLA · AMD · HIMS · HOOD · IBRX · DUOL · GOOG · XLU · SMH · ARTY · MP · BE · DE · RIVN · GDX · VOO · STRC
+<br><br>
+<strong>Monto invertido total:</strong> ~US$ 3.883
+</div>
+</div>
+<script>
+document.getElementById('loadBtn').addEventListener('click', () => {
+  location.href = '/?seed=W3siaWQiOiJwX3o3cXR4NXl6MSIsInRpcG8iOiJhY2Npb24iLCJ0aWNrZXIiOiJQTFRSIiwiY2FudGlkYWQiOjYuNjMyOSwicHJlY2lvIjoxNDYuMTY2OSwiZmVjaGEiOiIyMDI2LTAxLTAxIn0seyJpZCI6InBfeDA4OWowZmlhIiwidGlwbyI6ImFjY2lvbiIsInRpY2tlciI6IlRTTEEiLCJjYW50aWRhZCI6Mi4wODU2OSwicHJlY2lvIjozNzkuNDE3MywiZmVjaGEiOiIyMDI2LTAxLTAxIn0seyJpZCI6InBfYTNobmh4NTIwIiwidGlwbyI6ImFjY2lvbiIsInRpY2tlciI6IkFNRCIsImNhbnRpZGFkIjoxLjQ2OTUsInByZWNpbyI6MjMzLjk2MzIsImZlY2hhIjoiMjAyNi0wMS0wMSJ9LHsiaWQiOiJwX2o0bzA5M2xrayIsInRpcG8iOiJhY2Npb24iLCJ0aWNrZXIiOiJISU1TIiwiY2FudGlkYWQiOjE4LjE4Nzc5LCJwcmVjaW8iOjIxLjg1ODgsImZlY2hhIjoiMjAyNi0wMS0wMSJ9LHsiaWQiOiJwX2Nra3VkYW8zMSIsInRpcG8iOiJhY2Npb24iLCJ0aWNrZXIiOiJIT09EIiwiY2FudGlkYWQiOjIuNDE2NzQsInByZWNpbyI6ODIuNzU2MSwiZmVjaGEiOiIyMDI2LTAxLTAxIn0seyJpZCI6InBfNnlzZ3lpcWR6IiwidGlwbyI6ImFjY2lvbiIsInRpY2tlciI6IklCUlgiLCJjYW50aWRhZCI6MjIuODcwMTQsInByZWNpbyI6Ny43MzUsImZlY2hhIjoiMjAyNi0wMS0wMSJ9LHsiaWQiOiJwXzU1ZXZmZDJ1ZyIsInRpcG8iOiJhY2Npb24iLCJ0aWNrZXIiOiJEVU9MIiwiY2FudGlkYWQiOjEuMzk4NjksInByZWNpbyI6OTkuMzg2NiwiZmVjaGEiOiIyMDI2LTAxLTAxIn0seyJpZCI6InBfajd4OTg3YmZiIiwidGlwbyI6ImFjY2lvbiIsInRpY2tlciI6IkdPT0ciLCJjYW50aWRhZCI6MC4zNjM2LCJwcmVjaW8iOjMyMS43MSwiZmVjaGEiOiIyMDI2LTAxLTAxIn0seyJpZCI6InBfeW1rOTVmMHZoIiwidGlwbyI6ImFjY2lvbiIsInRpY2tlciI6IlhMVSIsImNhbnRpZGFkIjozLjAxNDE0LCJwcmVjaW8iOjQ0LjE1NjQsImZlY2hhIjoiMjAyNi0wMS0wMSJ9LHsiaWQiOiJwX2luZHN6cThscSIsInRpcG8iOiJhY2Npb24iLCJ0aWNrZXIiOiJTTUgiLCJjYW50aWRhZCI6MC4yMjcxLCJwcmVjaW8iOjQwNS4wMzcxLCJmZWNoYSI6IjIwMjYtMDEtMDEifSx7ImlkIjoicF82OGMwb2R0dWoiLCJ0aXBvIjoiYWNjaW9uIiwidGlja2VyIjoiQVJUWSIsImNhbnRpZGFkIjoxLjc5NjQ2LCJwcmVjaW8iOjUxLjIwNDcsImZlY2hhIjoiMjAyNi0wMS0wMSJ9LHsiaWQiOiJwX3R3c256cTNiaSIsInRpcG8iOiJhY2Npb24iLCJ0aWNrZXIiOiJNUCIsImNhbnRpZGFkIjoxLjU2MDQ0LCJwcmVjaW8iOjYyLjg3NTMsImZlY2hhIjoiMjAyNi0wMS0wMSJ9LHsiaWQiOiJwXzA0eDloZG5kYyIsInRpcG8iOiJhY2Npb24iLCJ0aWNrZXIiOiJCRSIsImNhbnRpZGFkIjowLjMzMjQxLCJwcmVjaW8iOjE4Ni4xNzI4LCJmZWNoYSI6IjIwMjYtMDEtMDEifSx7ImlkIjoicF9ldDB2ZXVmNmsiLCJ0aXBvIjoiYWNjaW9uIiwidGlja2VyIjoiREUiLCJjYW50aWRhZCI6MC4xNDU4NCwicHJlY2lvIjo2MDMuNTEyLCJmZWNoYSI6IjIwMjYtMDEtMDEifSx7ImlkIjoicF9waGhpZ2NncTIiLCJ0aXBvIjoiYWNjaW9uIiwidGlja2VyIjoiUklWTiIsImNhbnRpZGFkIjo1LjMwMDk2LCJwcmVjaW8iOjE0LjkwMTcsImZlY2hhIjoiMjAyNi0wMS0wMSJ9LHsiaWQiOiJwXzZid3Nmb29jNCIsInRpcG8iOiJhY2Npb24iLCJ0aWNrZXIiOiJHRFgiLCJjYW50aWRhZCI6MC41NDI3NywicHJlY2lvIjoxMDQuOTQ4MSwiZmVjaGEiOiIyMDI2LTAxLTAxIn0seyJpZCI6InBfN2ZvMXJieGtvIiwidGlwbyI6ImFjY2lvbiIsInRpY2tlciI6IlZPTyIsImNhbnRpZGFkIjowLjA1MjMyLCJwcmVjaW8iOjYyNy41MDM4LCJmZWNoYSI6IjIwMjYtMDEtMDEifSx7ImlkIjoicF96N2M0cGtib3EiLCJ0aXBvIjoiYWNjaW9uIiwidGlja2VyIjoiU1RSQyIsImNhbnRpZGFkIjowLjE0MDA3LCJwcmVjaW8iOjk4LjQ3MjksImZlY2hhIjoiMjAyNi0wMS0wMSJ9XQ';
+});
+</script>
+</body>
+</html>

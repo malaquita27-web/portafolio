@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/api/stock/:ticker", "destination": "https://stooq.com/q/l/?s=:ticker.us&f=sd2t2ohlcv&h&e=csv" },
+    { "source": "/api/yahoo/:ticker", "destination": "https://query1.finance.yahoo.com/v8/finance/chart/:ticker?interval=1d&range=1d" }
+  ]
+}
