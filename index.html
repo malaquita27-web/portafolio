@@ -649,6 +649,27 @@ let typeFilter = localStorage.getItem(STORAGE_KEYS.typeFilter) || 'all';
 let pieChart = null;
 
 /* ============================================================
+ *  Cargar las 18 acciones de Hapi (seed embebido)
+ *  Se invoca desde el botón que aparece en el placeholder vacío.
+ * ============================================================ */
+const HAPI_18_SEED = 'W3siaWQiOiJwX21pc3VvNWkzMCIsInRpcG8iOiJhY2Npb24iLCJ0aWNrZXIiOiJQTFRSIiwiY2FudGlkYWQiOjYuNjMyOSwicHJlY2lvIjoxNDYuMTY2OSwiZmVjaGEiOiIyMDI2LTAxLTAxIn0seyJpZCI6InBfZXN1cW55c2s1IiwidGlwbyI6ImFjY2lvbiIsInRpY2tlciI6IlRTTEEiLCJjYW50aWRhZCI6Mi4wODU2OSwicHJlY2lvIjozNzkuNDE3MywiZmVjaGEiOiIyMDI2LTAxLTAxIn0seyJpZCI6InBfcmhqNXF6NHgzIiwidGlwbyI6ImFjY2lvbiIsInRpY2tlciI6IkFNRCIsImNhbnRpZGFkIjoxLjQ2OTUsInByZWNpbyI6MjMzLjk2MzIsImZlY2hhIjoiMjAyNi0wMS0wMSJ9LHsiaWQiOiJwXzE0bnA3Z2o1NyIsInRpcG8iOiJhY2Npb24iLCJ0aWNrZXIiOiJISU1TIiwiY2FudGlkYWQiOjE4LjE4Nzc5LCJwcmVjaW8iOjIxLjg1ODgsImZlY2hhIjoiMjAyNi0wMS0wMSJ9LHsiaWQiOiJwXzl0NWR5ZHJmbCIsInRpcG8iOiJhY2Npb24iLCJ0aWNrZXIiOiJIT09EIiwiY2FudGlkYWQiOjIuNDE2NzQsInByZWNpbyI6ODIuNzU2MSwiZmVjaGEiOiIyMDI2LTAxLTAxIn0seyJpZCI6InBfNWxvMXN4NmVjIiwidGlwbyI6ImFjY2lvbiIsInRpY2tlciI6IklCUlgiLCJjYW50aWRhZCI6MjIuODcwMTQsInByZWNpbyI6Ny43MzUsImZlY2hhIjoiMjAyNi0wMS0wMSJ9LHsiaWQiOiJwX3BrdHkwd2dzbiIsInRpcG8iOiJhY2Npb24iLCJ0aWNrZXIiOiJEVU9MIiwiY2FudGlkYWQiOjEuMzk4NjksInByZWNpbyI6OTkuMzg2NiwiZmVjaGEiOiIyMDI2LTAxLTAxIn0seyJpZCI6InBfbnZ5ZmY0aTk4IiwidGlwbyI6ImFjY2lvbiIsInRpY2tlciI6IkdPT0ciLCJjYW50aWRhZCI6MC4zNjM2LCJwcmVjaW8iOjMyMS43MSwiZmVjaGEiOiIyMDI2LTAxLTAxIn0seyJpZCI6InBfZmlycGgxcXdxIiwidGlwbyI6ImFjY2lvbiIsInRpY2tlciI6IlhMVSIsImNhbnRpZGFkIjozLjAxNDE0LCJwcmVjaW8iOjQ0LjE1NjQsImZlY2hhIjoiMjAyNi0wMS0wMSJ9LHsiaWQiOiJwX21ueGplNXI4aSIsInRpcG8iOiJhY2Npb24iLCJ0aWNrZXIiOiJTTUgiLCJjYW50aWRhZCI6MC4yMjcxLCJwcmVjaW8iOjQwNS4wMzcxLCJmZWNoYSI6IjIwMjYtMDEtMDEifSx7ImlkIjoicF93MmVkNzR3c2MiLCJ0aXBvIjoiYWNjaW9uIiwidGlja2VyIjoiQVJUWSIsImNhbnRpZGFkIjoxLjc5NjQ2LCJwcmVjaW8iOjUxLjIwNDcsImZlY2hhIjoiMjAyNi0wMS0wMSJ9LHsiaWQiOiJwX255OHpid3A4eiIsInRpcG8iOiJhY2Npb24iLCJ0aWNrZXIiOiJNUCIsImNhbnRpZGFkIjoxLjU2MDQ0LCJwcmVjaW8iOjYyLjg3NTMsImZlY2hhIjoiMjAyNi0wMS0wMSJ9LHsiaWQiOiJwX3VqZHNuZmxkZiIsInRpcG8iOiJhY2Npb24iLCJ0aWNrZXIiOiJCRSIsImNhbnRpZGFkIjowLjMzMjQxLCJwcmVjaW8iOjE4Ni4xNzI4LCJmZWNoYSI6IjIwMjYtMDEtMDEifSx7ImlkIjoicF9xcjlxZjc4NW8iLCJ0aXBvIjoiYWNjaW9uIiwidGlja2VyIjoiREUiLCJjYW50aWRhZCI6MC4xNDU4NCwicHJlY2lvIjo2MDMuNTEyLCJmZWNoYSI6IjIwMjYtMDEtMDEifSx7ImlkIjoicF8wcnhrODFkM2MiLCJ0aXBvIjoiYWNjaW9uIiwidGlja2VyIjoiUklWTiIsImNhbnRpZGFkIjo1LjMwMDk2LCJwcmVjaW8iOjE0LjkwMTcsImZlY2hhIjoiMjAyNi0wMS0wMSJ9LHsiaWQiOiJwX3NrOHdwY3c4OSIsInRpcG8iOiJhY2Npb24iLCJ0aWNrZXIiOiJHRFgiLCJjYW50aWRhZCI6MC41NDI3NywicHJlY2lvIjoxMDQuOTQ4MSwiZmVjaGEiOiIyMDI2LTAxLTAxIn0seyJpZCI6InBfd2tmeGVtd250IiwidGlwbyI6ImFjY2lvbiIsInRpY2tlciI6IlZPTyIsImNhbnRpZGFkIjowLjA1MjMyLCJwcmVjaW8iOjYyNy41MDM4LCJmZWNoYSI6IjIwMjYtMDEtMDEifSx7ImlkIjoicF9udzQ5aGt2b3giLCJ0aXBvIjoiYWNjaW9uIiwidGlja2VyIjoiU1RSQyIsImNhbnRpZGFkIjowLjE0MDA3LCJwcmVjaW8iOjk4LjQ3MjksImZlY2hhIjoiMjAyNi0wMS0wMSJ9XQ';
+
+function loadHapi18() {
+  try {
+    const json = decodeURIComponent(escape(atob(HAPI_18_SEED)));
+    const data = JSON.parse(json);
+    data.forEach(p => { if (!p.id) p.id = cryptoId(); });
+    positions = data;
+    saveJSON(STORAGE_KEYS.positions, positions);
+    localStorage.removeItem(STORAGE_KEYS.lastUpdate);
+    render();
+    refreshAll();
+  } catch (err) {
+    alert('Error cargando las 18 acciones: ' + err.message);
+  }
+}
+
+/* ============================================================
  *  Tema
  * ============================================================ */
 function applyTheme(t) {
@@ -894,10 +915,16 @@ function render() {
 
   const tbody = document.getElementById('tbody');
   if (rows.length === 0) {
-    const msg = positions.length === 0
-      ? 'No hay posiciones. Toca "Agregar posición" para registrar tu primera compra.'
-      : `No hay posiciones de tipo ${typeFilter === 'accion' ? 'acciones' : 'crypto'}.`;
-    tbody.innerHTML = `<tr><td colspan="7" class="empty">${msg}</td></tr>`;
+    if (positions.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" class="empty">
+        No hay posiciones. Toca "Agregar posición" para registrar tu primera compra.<br><br>
+        <button class="btn primary" id="loadHapiBtn" type="button">Cargar mis 18 acciones de Hapi</button>
+      </td></tr>`;
+      const loadBtn = document.getElementById('loadHapiBtn');
+      if (loadBtn) loadBtn.addEventListener('click', loadHapi18);
+    } else {
+      tbody.innerHTML = `<tr><td colspan="7" class="empty">No hay posiciones de tipo ${typeFilter === 'accion' ? 'acciones' : 'crypto'}.</td></tr>`;
+    }
   } else {
     tbody.innerHTML = rows.map(r => {
       const priceCell = r.currentPrice != null
